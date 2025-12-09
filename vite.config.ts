@@ -26,4 +26,15 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  //配置代理服务器
+  server: {
+    port: 5173, // 前端端口（可选）
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5119', // 后端地址
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
 })
