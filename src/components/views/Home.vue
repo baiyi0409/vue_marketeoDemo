@@ -36,12 +36,17 @@
                 <div class="home-content-revenue">
                     <div class="revenue-title">
                         <p>Total revenue</p>
-                        <!-- 收入数据 -->
-                        <div>
-
-                        </div>
-                        <!-- 折线图 -->
                     </div>
+                    <!-- 收入数据 -->
+                    <div class="revenue-data">
+                        <div>
+                            <span>$17,086.92</span>
+                            <span>8.34%</span>
+                        </div>
+                        <p>Gained $9,721.54 this month</p>
+                    </div>
+                    <!-- 折线图 -->
+                    <div ref="revenueChart" style="width: 100%; height: 100%;"></div>
                 </div>
 
                 <div class="home-content-stats">
@@ -79,7 +84,10 @@
 
 <script setup lang="ts">
 import SvgIcon from '../SvgIcon.vue'
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import * as echarts from 'echarts'
+import { format } from 'echarts/types/src/util/time.js';
+
 // 搜索框文本
 const searchText = ref('');
 const handleSearch = () => {
@@ -90,6 +98,109 @@ const handleSearch = () => {
         alert('请输入搜索内容！')
     }
 };
+//收入图表
+const revenueChart = ref<HTMLElement | null>(null);
+let myRevenueChart = null
+// 初始化图表
+const initChart = () => {
+    myRevenueChart = echarts.init(revenueChart.value)
+    // 配置项对象
+    const option = {
+        //取消边距
+        grid: {
+            left: '0%',
+            right: '0%',
+            bottom: '0%',
+            top: '20px'
+        },
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            textStyle: {
+                color: '#fff',
+                fontSize: 12
+            },
+            borderRadius: 8,
+            padding: [8, 12],
+            axisPointer: {
+                type: 'line'
+            },
+            formatter(params) {
+                if (Array.isArray(params)) {
+                    // axis 模式：params 是多个数据项的数组
+                    const date = params[0].name; // x 轴名称
+                    let html = `${date}<br/>`;
+                    params.forEach(item => {
+                        //html += `${item.marker} ${item.seriesName}: $${item.value}<br/>`;
+                        html += `${item.marker} ${item.value}k<br/>`;
+                    });
+                    return html;
+                } else {
+                    // item 模式
+                    return `${params.name}: ${params.value}k`;
+                }
+            }
+        },
+        xAxis:
+        {
+            axisLabel: {
+                formatter: 'Apr {value}'
+            },
+            //x轴左右空白
+            boundaryGap: false,
+            data: ['7', '8', '9', '10', '11', '12', '13', '14']
+        },
+        yAxis:
+        {
+            //刻度标签
+            axisLabel: {
+                formatter: '{value}K'
+            },
+            splitLine: {
+                show: true,
+                lineStyle: {
+                    type: 'dashed',
+                    width: 1.2
+                }
+            }
+
+        },
+        series: [{
+            type: 'line',
+            data: [38, 57, 40, 63, 42, 20, 60, 40],
+            smooth: true,
+            areaStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: 'rgba(59, 129, 246, 0.6)' },   // 上方：较深/不透明
+                    { offset: 1, color: 'rgba(255, 255, 255, 0.2)' }  // 下方：接近白色 + 半透明
+                ])
+            }
+        }]
+    }
+    //使用配置
+    myRevenueChart.setOption(option)
+}
+
+// 窗口大小变化时调整图表尺寸
+const resizeChart = () => {
+    myRevenueChart?.resize()
+}
+
+
+
+// 生命周期钩子
+onMounted(() => {
+    initChart()
+    // 监听窗口大小变化事件以支持响应式
+    window.addEventListener('resize', resizeChart)
+})
+
+onUnmounted(() => {
+    if (myRevenueChart) {
+        window.removeEventListener('resize', resizeChart)
+        myRevenueChart.dispose() // 销毁实例
+    }
+})
 </script>
 
 <style scoped lang="less">
@@ -208,7 +319,10 @@ const handleSearch = () => {
 
 
         &-revenue {
-            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 15px;
             background-color: white;
             border-radius: 10px;
             height: 45%;
@@ -219,6 +333,37 @@ const handleSearch = () => {
                 p {
                     font-size: 16px;
                     font-weight: 600;
+                }
+            }
+
+            .revenue-data {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+
+                div {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    span:first-child {
+                        font-size: 32px;
+                        font-weight: 500;
+                    }
+
+                    span:last-child {
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: #52c41a;
+                        border: 1px solid #52c41a;
+                        padding: 6px 8px;
+                        border-radius: 10px;
+                    }
+                }
+
+                p {
+                    font-size: 14px;
+                    color: #a8a8a8;
                 }
             }
         }
