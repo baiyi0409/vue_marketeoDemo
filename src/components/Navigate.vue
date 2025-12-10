@@ -1,7 +1,7 @@
 <template>
     <div class="navigate">
         <div class="navigate-title">
-            <SvgIcon name="logo" color="#3b81f6" style="width: 24px; height: 24px;" />
+            <SvgIcon name="logo" color="#3b81f6" style="width: 32px; height: 32px;" />
             Marketeo
         </div>
 
@@ -9,13 +9,21 @@
             <p>Menu</p>
             <div>
                 <RouterLink v-for="link in navLinks" :to="link.path" :key="link.name">
+                    <SvgIcon :name="link.name.toLowerCase()" color="currentColor" style="width: 24px; height: 24px;" />
                     {{ link.name }}
                 </RouterLink>
             </div>
         </div>
 
         <div class="navigate-settings">
-            Settings
+            <RouterLink to="/settings">
+                <SvgIcon name="settings" style="width: 24px; height: 24px;" />
+                Settings
+            </RouterLink>
+            <RouterLink to="/login" style="color: #e73f3f;">
+                <SvgIcon name="logout" color="currentColor" style="width: 24px; height: 24px;" />
+                Log out
+            </RouterLink>
         </div>
     </div>
 </template>
@@ -68,8 +76,9 @@ const navLinks = reactive([
             gap: 8px;
 
             a {
-                display: block;
-                /* 让整个区域可点击 */
+                display: flex;
+                align-items: center;
+                gap: 15px;
                 text-decoration: none;
                 color: #333;
                 font-weight: 500;
@@ -92,7 +101,29 @@ const navLinks = reactive([
 
     &-settings {
         margin-top: auto;
-        font-size: 14px;
+        font-size: 16px;
+
+        a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+
+            &:hover {
+                background-color: #f0f2f5;
+            }
+
+            &.router-link-active {
+                background-color: #e6f2ff;
+                color: #1890ff;
+                font-weight: 600;
+            }
+        }
     }
 }
 </style>

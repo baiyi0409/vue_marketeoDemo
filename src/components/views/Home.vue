@@ -36,6 +36,13 @@
                 <div class="home-content-revenue">
                     <div class="content-title">
                         <p>Total revenue</p>
+                        <div class="dropdown-container">
+                            <select class="custom-select">
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select>
+                        </div>
                     </div>
                     <!-- 收入数据 -->
                     <div class="revenue-data">
@@ -87,7 +94,7 @@
                             <span>Customer</span>
                         </div>
 
-                        <div v-for="item in orderList" key="item.id" class="table-row">
+                        <div v-for="item in orderList" :key="item.id" class="table-row">
                             <span>{{ item.id }}</span>
                             <div class="product-cell">
                                 <span>{{ item.productName }}</span>
@@ -107,12 +114,23 @@
                     <div class="content-title">
                         <p>Top products</p>
                     </div>
+                    <ul class="product-list">
+                        <li v-for="item in topProductList" :key="item.id" class="product-item">
+                            <div class="product-info">
+                                <span>{{ item.productName }}</span>
+                                <span>{{ item.soldNum }} sold</span>
+                            </div>
+                            <div class="product-price">${{ item.price }}</div>
+                        </li>
+                    </ul>
                 </div>
                 <!-- 购买占比 -->
                 <div class="home-content-traffic">
                     <div class="content-title">
                         <p>Traffic</p>
                     </div>
+                    <!-- 正负向柱形图 -->
+                    <div ref="trafficChart" style="width: 100%; height: 100%;"></div>
                 </div>
             </div>
         </div>
@@ -316,10 +334,94 @@ const fetchOrderList = async () => {
     }
 }
 
+//产品排名
+const topProductList = ref(null);
+const fetchTopProductList = async () => {
+    try {
+        const data = await api.getTopProductList()
+        console.log('收入数据：', data)
+        topProductList.value = data
+    } catch (error) {
+        console.error('获取收入数据失败：', error)
+    }
+}
+
+//人员分类图标
+const trafficChart = ref<HTMLElement | null>(null);
+let myTrafficChart = null;
+
+const initTrafficChart = () => {
+    myTrafficChart = echarts.init(trafficChart.value);
+    const option = {
+        grid: {
+            top: "12px",
+            bottom: "0%",
+            left: "0%",
+            right: "0%"
+        },
+        xAxis: [
+            {
+                type: 'value',
+                axisLine: {
+                    show: false
+                },
+                axisLabel: {
+                    show: false
+                },
+                splitLine: {
+                    show: false,
+
+                }
+
+            }
+        ],
+        yAxis: [
+            {
+                type: 'category',
+                //刻度
+                axisTick: {
+                    show: false
+                },
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        type: 'dashed',
+                        width: 1.2
+                    }
+                }
+            }
+        ],
+        series: [
+            {
+                name: 'Male',
+                type: 'bar',
+                stack: 'Total',
+                data: [320, 302, 341, 374, 390, 450, 420],
+                color: '#2270f3',
+                itemStyle: {
+                    borderRadius: [0, 4, 4, 0] // 上圆角，下直角（顺时针：top-left, top-right, bottom-right, bottom-left）
+                }
+            },
+            {
+                name: 'Female',
+                type: 'bar',
+                stack: 'Total',
+                data: [-120, -132, -101, -134, -190, -230, -210],
+                color: '#f3226d',
+                itemStyle: {
+                    borderRadius: [4, 0, 0, 4]
+                }
+            }
+        ]
+    };
+    myTrafficChart.setOption(option);
+}
+
 // 窗口大小变化时调整图表尺寸
 const resizeChart = () => {
-    myRevenueChart?.resize()
-    mySoldChart?.resize()
+    myRevenueChart?.resize();
+    mySoldChart?.resize();
+    myTrafficChart?.resize();
 }
 
 // 生命周期钩子
@@ -328,6 +430,8 @@ onMounted(() => {
     initRevenueChart();
     initSoldChart();
     fetchOrderList();
+    fetchTopProductList();
+    initTrafficChart();
     // 监听窗口大小变化事件以支持响应式
     window.addEventListener('resize', resizeChart);
 
@@ -337,6 +441,12 @@ onUnmounted(() => {
     if (myRevenueChart) {
         window.removeEventListener('resize', resizeChart)
         myRevenueChart.dispose() // 销毁实例
+    }
+    if (mySoldChart) {
+        mySoldChart.dispose() // 销毁实例
+    }
+    if (myTrafficChart) {
+        myTrafficChart.dispose() // 销毁实例
     }
 })
 </script>
@@ -457,9 +567,11 @@ onUnmounted(() => {
 
         .content-title {
             display: flex;
+            align-items: center;
+            justify-content: space-between;
 
             p {
-                font-size: 18px;
+                font-size: 20px;
                 font-weight: 600;
             }
         }
@@ -620,6 +732,48 @@ onUnmounted(() => {
             background-color: white;
             border-radius: 10px;
             height: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            .product-list {
+                list-style: none;
+                padding: 0;
+                margin: 12px 0 0;
+                overflow-y: auto;
+                scroll-behavior: smooth;
+                height: 100%;
+
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+
+            }
+
+            .product-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 20px;
+                background-color: #eff1f6;
+                border-radius: 10px;
+                margin-bottom: 10px;
+            }
+
+            .product-info {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+                span:first-child {
+                    font-weight: 600;
+                }
+
+                span:last-child {
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #b7b8be;
+                }
+            }
         }
     }
 }

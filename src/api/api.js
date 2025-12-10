@@ -15,5 +15,11 @@ export default {
             url:"/Home/GetOrderList",
             method:"get",
         })
+    },
+    getTopProductList() {
+        return request({
+            url:"/Home/GetTopProductList",
+            method:"get"
+        })
     }
 }
