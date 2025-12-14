@@ -1,13 +1,14 @@
 <template>
   <!-- 导航栏 -->
-  <Navigate />
+  <Navigate v-if="store.isAuthenticated" />
   <!-- 路由出口 -->
   <RouterView />
 </template>
 
 <script setup lang="ts">
 import Navigate from './components/Navigate.vue';
-
+import { useUserStore } from '@/stores/'
+const store = useUserStore()
 
 </script>
 

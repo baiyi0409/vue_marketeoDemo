@@ -36,13 +36,7 @@
                 <div class="home-content-revenue">
                     <div class="content-title">
                         <p>Total revenue</p>
-                        <div class="dropdown-container">
-                            <select class="custom-select">
-                                <option value="monthly">Monthly</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="daily">Daily</option>
-                            </select>
-                        </div>
+                        <Combobox v-model="revenueSelected" :items="['Monthly', 'Daily', 'Weekly']" />
                     </div>
                     <!-- 收入数据 -->
                     <div class="revenue-data">
@@ -128,6 +122,7 @@
                 <div class="home-content-traffic">
                     <div class="content-title">
                         <p>Traffic</p>
+                        <Combobox v-model="trafficSelected" :items="['Monthly', 'Daily', 'Weekly']" />
                     </div>
                     <!-- 正负向柱形图 -->
                     <div ref="trafficChart" style="width: 100%; height: 100%;"></div>
@@ -140,11 +135,10 @@
 
 <script setup lang="ts">
 import SvgIcon from '../SvgIcon.vue'
+import Combobox from '../Combobox.vue';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import * as echarts from 'echarts'
 import api from '@/api/api';
-import legendFilter from 'echarts/types/src/component/legend/legendFilter.js';
-import { ITEM_STYLE_KEY_MAP } from 'echarts/types/src/model/mixin/itemStyle.js';
 
 // 搜索框文本
 const searchText = ref('');
@@ -417,6 +411,10 @@ const initTrafficChart = () => {
     myTrafficChart.setOption(option);
 }
 
+const revenueSelected = ref('Monthly');
+const trafficSelected = ref('Monthly');
+
+
 // 窗口大小变化时调整图表尺寸
 const resizeChart = () => {
     myRevenueChart?.resize();
@@ -567,7 +565,6 @@ onUnmounted(() => {
 
         .content-title {
             display: flex;
-            align-items: center;
             justify-content: space-between;
 
             p {

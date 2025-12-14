@@ -20,10 +20,10 @@
                 <SvgIcon name="settings" style="width: 24px; height: 24px;" />
                 Settings
             </RouterLink>
-            <RouterLink to="/login" style="color: #e73f3f;">
+            <button @click="handleLogout" class="logout-button">
                 <SvgIcon name="logout" color="currentColor" style="width: 24px; height: 24px;" />
                 Log out
-            </RouterLink>
+            </button>
         </div>
     </div>
 </template>
@@ -38,6 +38,22 @@ const navLinks = reactive([
     { name: 'Customers', path: '/customer' },
     { name: 'Orders', path: '/order' },
 ]);
+
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores'
+
+const router = useRouter()
+const store = useUserStore()
+
+const handleLogout = () => {
+    // 清除 store 中的用户数据
+    store.user = null;
+    store.isAuthenticated = false;
+
+    //localStorage.removeItem('user')
+
+    router.push('/login')
+}
 
 </script>
 
@@ -124,6 +140,34 @@ const navLinks = reactive([
                 font-weight: 600;
             }
         }
+    }
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    color: #e73f3f;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+    font-size: 16px;
+
+    &:hover {
+        background-color: #f0f2f5;
+    }
+
+    &.router-link-active {
+        background-color: #e6f2ff;
+        color: #1890ff;
+        font-weight: 600;
     }
 }
 </style>
