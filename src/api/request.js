@@ -19,17 +19,17 @@ const service = axios.create({
 // 添加响应(请求之后)拦截器
 service.interceptors.response.use(
     (res) => {
-        //console.log('原始响应:', res);
+        console.log('原始响应:', res);
         //console.log('res.data:', res.data)
-        const { code, data, msg } = res.data;
+        const { code, data, message  } = res.data;
         if (code === 200) {
             console.log("请求成功，数据为：", data);
             return data;
         } else {
             const NETWORK_ERROR = '网络请求错误'
             //ElMessage.error(msg || NETWORK_ERROR);
-            alert(msg || NETWORK_ERROR);
-            return Promise.reject(msg || NETWORK_ERROR)
+            alert(message  || NETWORK_ERROR);
+            return Promise.reject(message  || NETWORK_ERROR)
         }
     }
 );

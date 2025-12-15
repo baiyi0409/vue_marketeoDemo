@@ -154,7 +154,7 @@ const handleSearch = () => {
 const revenueData = ref(null) // 初始为 null，表示未加载
 const fetchRevenueData = async () => {
     try {
-        const data = await api.getRevenueData()
+        const data = await api.GetRevenueData()
         console.log('收入数据：', data)
         revenueData.value = data
     } catch (error) {
@@ -320,7 +320,7 @@ const initSoldChart = () => {
 const orderList = ref(null);
 const fetchOrderList = async () => {
     try {
-        const data = await api.getOrderList()
+        const data = await api.GetOrderList()
         console.log('收入数据：', data)
         orderList.value = data
     } catch (error) {
@@ -332,7 +332,7 @@ const fetchOrderList = async () => {
 const topProductList = ref(null);
 const fetchTopProductList = async () => {
     try {
-        const data = await api.getTopProductList()
+        const data = await api.GetTopProductList()
         console.log('收入数据：', data)
         topProductList.value = data
     } catch (error) {

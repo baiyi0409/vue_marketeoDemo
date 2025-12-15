@@ -116,6 +116,7 @@
 
 <script setup lang="ts">
 import SvgIcon from '../SvgIcon.vue';
+import api from '@/api/api';
 
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -127,30 +128,23 @@ const store = useUserStore()
 const username = ref('');
 const password = ref('');
 
-const handleLogin = () => {
+const handleLogin = async () => {
     if (!username.value || !password.value) {
         alert('请输入用户名和密码');
         return;
     }
 
-    // 模拟登录逻辑（实际应调用 API）
-    console.log('登录中...', { username: username.value, password: password.value });
+    const data = await api.Login(username.value, password.value);
+    console.log('收入数据：', data)
 
-    // 登录成功后跳转到首页（需配合 router 使用）
-    if (username.value == "admin" && password.value == "123456") {
-        store.user = {
-            username: username.value,
-            password: password.value,
-            token: password.value
-        };
-        store.isAuthenticated = !!store.user?.token
+    store.user = {
+        username: data.username,
+        password: data.password,
+        token: data.token
+    };
+    store.isAuthenticated = !!store.user?.token
 
-        console.log('userStore', store.user);
-        router.push('/');
-    }
-    else {
-        alert('输入的用户信息有误，请重试')
-    }
-
+    console.log('userStore', store.user);
+    router.push('/');
 };
 </script>
