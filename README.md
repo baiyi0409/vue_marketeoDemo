@@ -8,6 +8,12 @@
 
 后端地址：
 
+#### 默认登录信息
+
+用户账号：admin
+
+登录密码：123456
+
 #### 效果展示
 
 <img width="1917" height="1132" alt="image" src="https://github.com/user-attachments/assets/dd54cc78-53db-4935-870b-3efa9593246d" />
