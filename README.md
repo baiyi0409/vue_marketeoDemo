@@ -2,7 +2,7 @@
 
 #### 技术栈
 
-前端：Vue
+前端：Vue 3 + Vue Router + Pinia + Axios
 
 后端：Asp.Net Core
 
