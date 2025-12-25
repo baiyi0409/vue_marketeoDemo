@@ -1,5 +1,6 @@
 //用来封装axios请求
 import axios from "axios";
+import { useUserStore } from '@/stores'; 
 
 const service = axios.create({
     //baseURL: config.baseApi,
@@ -15,6 +16,20 @@ const service = axios.create({
 //     // 对请求错误做些什么
 //     return Promise.reject(error);
 // });
+
+service.interceptors.request.use(
+    (config) => {
+        const userStore = useUserStore();
+        // 如果存在 token，就添加到请求头
+        if (userStore.isAuthenticated && userStore.user?.token) {
+            config.headers.Authorization = `Bearer ${userStore.user.token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 // 添加响应(请求之后)拦截器
 service.interceptors.response.use(
